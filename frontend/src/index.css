@@ -1,0 +1,168 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ─── Custom Theme Configuration ─── */
+@plugin "daisyui/theme" {
+  name: "algoverse-dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: oklch(0.18 0.02 265);
+  --color-base-200: oklch(0.15 0.02 265);
+  --color-base-300: oklch(0.12 0.02 265);
+  --color-base-content: oklch(0.93 0.01 265);
+  --color-primary: oklch(0.65 0.22 265);
+  --color-primary-content: oklch(0.98 0 0);
+  --color-secondary: oklch(0.65 0.18 180);
+  --color-secondary-content: oklch(0.98 0 0);
+  --color-accent: oklch(0.70 0.18 330);
+  --color-accent-content: oklch(0.98 0 0);
+  --color-neutral: oklch(0.25 0.02 265);
+  --color-neutral-content: oklch(0.85 0.01 265);
+  --color-success: oklch(0.72 0.19 155);
+  --color-warning: oklch(0.80 0.16 85);
+  --color-error: oklch(0.65 0.22 25);
+  --color-info: oklch(0.70 0.15 230);
+  --rounded-box: 1rem;
+  --rounded-btn: 0.75rem;
+  --rounded-badge: 1rem;
+  --animation-btn: 0.2s;
+  --animation-input: 0.2s;
+  --btn-focus-scale: 0.97;
+  --tab-radius: 0.5rem;
+}
+
+@plugin "daisyui/theme" {
+  name: "algoverse-light";
+  default: false;
+  color-scheme: light;
+  --color-base-100: oklch(0.98 0.005 265);
+  --color-base-200: oklch(0.95 0.008 265);
+  --color-base-300: oklch(0.91 0.01 265);
+  --color-base-content: oklch(0.22 0.02 265);
+  --color-primary: oklch(0.55 0.25 265);
+  --color-primary-content: oklch(0.98 0 0);
+  --color-secondary: oklch(0.55 0.18 180);
+  --color-secondary-content: oklch(0.98 0 0);
+  --color-accent: oklch(0.60 0.20 330);
+  --color-accent-content: oklch(0.98 0 0);
+  --color-neutral: oklch(0.30 0.02 265);
+  --color-neutral-content: oklch(0.95 0.005 265);
+  --color-success: oklch(0.62 0.19 155);
+  --color-warning: oklch(0.75 0.16 85);
+  --color-error: oklch(0.58 0.22 25);
+  --color-info: oklch(0.60 0.15 230);
+  --rounded-box: 1rem;
+  --rounded-btn: 0.75rem;
+  --rounded-badge: 1rem;
+}
+
+/* ─── Global Styles ─── */
+* {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+code, pre, .font-mono, .monaco-editor {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.4 0.02 265);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.5 0.02 265);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px oklch(0.65 0.22 265 / 0.15); }
+  50%      { box-shadow: 0 0 40px oklch(0.65 0.22 265 / 0.3); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, oklch(0.65 0.22 265 / 0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ─── Glass Morphism Utility ─── */
+.glass-card {
+  background: oklch(0.2 0.02 265 / 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid oklch(0.4 0.02 265 / 0.2);
+}
+
+/* ─── Gradient Text ─── */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(0.65 0.22 265), oklch(0.70 0.18 330), oklch(0.65 0.18 180));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Premium Hover Card Effect ─── */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px oklch(0 0 0 / 0.15);
+}
