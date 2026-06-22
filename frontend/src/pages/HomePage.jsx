@@ -1,264 +1,132 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router';
-import axiosClient from '../utils/axiosClient';
-import { Trophy, ArrowRight, CheckCircle2, Search, Filter, Sparkles, Terminal, Flame, Target, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import axiosClient from '../utilis/axiosClient';
+import ProblemTable from '../components/ProblemTable';
 
-const HomePage = () => {
-  const [problems, setProblems] = useState([]);
-  const [solvedIds, setSolvedIds] = useState(new Set());
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('');
+function Homepage() {
+    const [problems, setProblems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [difficultyFilter, setDifficultyFilter] = useState('All');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [topicFilter, setTopicFilter] = useState('All Topics');
+    const { user } = useSelector((state) => state.auth);
 
-  const directoryRef = useRef(null);
-  const navigate = useNavigate();
+    const solvedIds = user?.problemSolved?.map(sp => sp._id || sp.id) || [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [problemsRes, solvedRes] = await Promise.all([
-          axiosClient.get('/admin/fetchAll/1/50'),
-          axiosClient.get('/admin/solvedByUser'),
-        ]);
-        setProblems(problemsRes.data || []);
-        const solved = new Set((solvedRes.data || []).map((p) => p._id));
-        setSolvedIds(solved);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    const filtered = problems.filter((p) => {
+        const matchSearch   = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchTopic    = topicFilter === 'All Topics' || p.tags?.some(t => t.toLowerCase() === topicFilter.toLowerCase());
+        const matchDiff     = difficultyFilter === 'All'   || p.difficulty?.toLowerCase() === difficultyFilter.toLowerCase();
+        const solved        = solvedIds.includes(p._id);
+        const matchStatus   = statusFilter === 'All' || (statusFilter === 'Solved' ? solved : !solved);
+        return matchSearch && matchTopic && matchDiff && matchStatus;
+    });
 
-  const filteredProblems = useMemo(() => {
-    return problems.filter(p =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.tags?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [problems, searchQuery]);
+    useEffect(() => {
+        axiosClient.get('/problem/getallproblems')
+            .then(res => { if (res.data.success) setProblems(res.data.data); })
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
+    }, []);
 
-  const scrollToDirectory = () => {
-    directoryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+    const solvedCount = solvedIds.length;
+    const totalCount  = problems.length;
 
-  const getDifficultyColor = (difficulty) => {
-    const colors = {
-      easy: 'text-success bg-success/10 border-success/20',
-      medium: 'text-warning bg-warning/10 border-warning/20',
-      hard: 'text-error bg-error/10 border-error/20'
-    };
-    return colors[difficulty?.toLowerCase()] || 'text-gray-500 bg-gray-500/10 border-gray-500/20';
-  };
+    return (
+        <div className="min-h-screen bg-base-200/40">
+            <div className="max-w-5xl mx-auto px-4 py-8">
 
-  const getDifficultyIcon = (difficulty) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy': return <Zap size={12} />;
-      case 'medium': return <Flame size={12} />;
-      case 'hard': return <Target size={12} />;
-      default: return null;
-    }
-  };
+                {/* Header */}
+                <div className="flex items-center justify-between mb-7">
+                    <div>
+                        <h1 className="text-xl font-bold">Problem Set</h1>
+                        <p className="text-sm text-base-content/40 mt-0.5">
+                            {totalCount} problems · {solvedCount} solved
+                        </p>
+                    </div>
 
-  const solvedCount = solvedIds.size;
-  const totalCount = problems.length;
-  const progressPercent = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
-
-  // Stats breakdown
-  const easyCount = problems.filter(p => p.difficulty?.toLowerCase() === 'easy').length;
-  const mediumCount = problems.filter(p => p.difficulty?.toLowerCase() === 'medium').length;
-  const hardCount = problems.filter(p => p.difficulty?.toLowerCase() === 'hard').length;
-
-  return (
-    <div className="min-h-screen bg-base-200/30 pb-20">
-      {/* ── Hero Section ── */}
-      <div className="relative bg-base-100 pt-12 pb-28 border-b border-base-200/50 overflow-hidden">
-        {/* Background decorations */}
-        <div className="absolute top-0 right-0 -mt-32 -mr-32 w-[500px] h-[500px] bg-primary/8 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -mb-32 -ml-32 w-[400px] h-[400px] bg-accent/6 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary/4 rounded-full blur-3xl"></div>
-
-        <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider animate-fade-in-up">
-            <Sparkles size={14} />
-            Powered by JDoodle Engine
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter text-base-content mb-5 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            Master Your{' '}
-            <span className="gradient-text">Code.</span>
-          </h1>
-          <p className="text-base md:text-lg text-base-content/50 mb-10 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Solve hand-picked algorithmic challenges, get AI-powered hints, and track your progress — all in one place.
-          </p>
-
-          {/* Stats Cards */}
-          {!loading && (
-            <div className="flex flex-col md:flex-row items-stretch justify-center gap-4 w-full max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-              {/* Progress Card */}
-              <div className="flex-1 bg-base-100 border border-base-200/60 shadow-xl rounded-2xl p-6 text-left hover-lift">
-                <div className="text-[10px] uppercase tracking-[0.2em] font-extrabold text-base-content/35 mb-3">Your Progress</div>
-                <div className="flex items-end gap-3 mb-4">
-                  <div className="text-4xl font-black gradient-text font-mono">{solvedCount}</div>
-                  <div className="text-xs font-bold text-base-content/40 mb-1.5">/ {totalCount} solved</div>
-                </div>
-                <div className="w-full bg-base-200 h-2 rounded-full overflow-hidden mb-4">
-                  <div
-                    className="bg-gradient-to-r from-primary to-accent h-full rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${progressPercent}%` }}
-                  ></div>
-                </div>
-                <div className="flex gap-4 text-xs font-semibold">
-                  <span className="text-success flex items-center gap-1"><Zap size={11} /> {easyCount} Easy</span>
-                  <span className="text-warning flex items-center gap-1"><Flame size={11} /> {mediumCount} Med</span>
-                  <span className="text-error flex items-center gap-1"><Target size={11} /> {hardCount} Hard</span>
-                </div>
-              </div>
-
-              {/* CTA Card */}
-              <button
-                onClick={scrollToDirectory}
-                className="flex-1 btn btn-primary h-auto py-8 text-xl shadow-primary/25 shadow-2xl group rounded-2xl border-none bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all"
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <span className="font-extrabold text-lg">Start Solving</span>
-                  <span className="text-xs font-medium opacity-70">Browse {totalCount} challenges</span>
-                </div>
-                <ArrowRight className="group-hover:translate-x-1 transition-transform ml-3" size={24} />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Problem Directory ── */}
-      <div ref={directoryRef} className="max-w-6xl mx-auto p-4 md:p-8 -mt-12 relative z-20">
-        <div className="bg-base-100 rounded-2xl shadow-2xl border border-base-200/50 overflow-hidden">
-
-          {/* Sticky Header */}
-          <div className="p-5 md:p-6 border-b border-base-200/50 bg-base-100/90 backdrop-blur-xl sticky top-16 z-30">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Terminal className="text-primary" size={20} />
-                </div>
-                <div>
-                  <h2 className="text-lg font-extrabold tracking-tight">Challenge Directory</h2>
-                  <p className="text-[10px] font-bold text-base-content/35 uppercase tracking-[0.15em]">
-                    {filteredProblems.length} problems available
-                  </p>
-                </div>
-              </div>
-
-              {/* Search & Filters */}
-              <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                <div className="relative group flex-1 sm:w-56">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/25 group-focus-within:text-primary transition-colors" size={15} />
-                  <input
-                    type="text"
-                    placeholder="Search problems..."
-                    className="input input-sm w-full pl-9 bg-base-200/40 border-base-200/60 focus:border-primary/40 focus:bg-base-100 rounded-xl h-9 text-sm transition-all"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex bg-base-200/40 rounded-xl p-0.5 items-center px-2 gap-1 overflow-x-auto no-scrollbar border border-base-200/40">
-                  <Filter size={13} className="text-base-content/25 shrink-0 mr-1" />
-                  {['All', 'Array', 'String', 'Dp', 'Tree', 'Graph'].map(tag => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        if (tag === 'All') { setSearchQuery(''); setActiveFilter(''); }
-                        else { setSearchQuery(tag === activeFilter ? '' : tag); setActiveFilter(tag === activeFilter ? '' : tag); }
-                      }}
-                      className={`btn btn-xs rounded-lg border-none shadow-none text-[11px] font-semibold whitespace-nowrap ${
-                        (tag === 'All' && !activeFilter) || activeFilter === tag
-                          ? 'bg-primary text-primary-content'
-                          : 'bg-transparent text-base-content/50 hover:bg-base-300/60'
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            {loading ? (
-              <div className="flex justify-center p-24">
-                <span className="loading loading-ring loading-lg text-primary"></span>
-              </div>
-            ) : (
-              <table className="table table-lg w-full">
-                <thead>
-                  <tr className="text-base-content/25 uppercase text-[10px] tracking-[0.15em] font-extrabold border-none">
-                    <th className="w-20 text-center">Status</th>
-                    <th>Title</th>
-                    <th className="w-28">Difficulty</th>
-                    <th>Topics</th>
-                  </tr>
-                </thead>
-                <tbody className="text-base-content/75">
-                  {filteredProblems.length > 0 ? (
-                    filteredProblems.map((prob, idx) => {
-                      const isSolved = solvedIds.has(prob._id);
-                      return (
-                        <tr
-                          key={prob._id}
-                          className="hover:bg-primary/[0.03] transition-all cursor-pointer group border-base-200/30 animate-fade-in-up"
-                          style={{ animationDelay: `${idx * 0.03}s` }}
-                          onClick={() => navigate(`/problem/${prob._id}`)}
-                        >
-                          <td className="text-center">
-                            {isSolved ? (
-                              <CheckCircle2 className="text-success w-5 h-5 mx-auto drop-shadow-sm" />
-                            ) : (
-                              <div className="w-5 h-5 rounded-full border-2 border-base-content/10 mx-auto group-hover:border-primary/40 transition-colors"></div>
-                            )}
-                          </td>
-                          <td className="font-bold text-sm group-hover:text-primary transition-colors py-5">
-                            {prob.title}
-                          </td>
-                          <td>
-                            <div className={`inline-flex items-center gap-1 badge badge-sm border py-2 px-2.5 font-bold uppercase text-[10px] ${getDifficultyColor(prob.difficulty)}`}>
-                              {getDifficultyIcon(prob.difficulty)}
-                              {prob.difficulty}
+                    {/* Progress pill */}
+                    {totalCount > 0 && (
+                        <div className="flex items-center gap-3 bg-base-100 border border-base-300 rounded-xl px-4 py-2.5 shadow-sm">
+                            <div className="text-right">
+                                <div className="text-xl font-extrabold text-primary leading-none">{solvedCount}</div>
+                                <div className="text-[10px] text-base-content/40 mt-0.5">of {totalCount}</div>
                             </div>
-                          </td>
-                          <td>
-                            <div className="flex flex-wrap gap-1">
-                              {prob.tags?.split(',').map((tag, i) => (
-                                <span key={i} className="badge badge-ghost badge-xs text-[9px] font-bold uppercase opacity-40">{tag.trim()}</span>
-                              ))}
+                            <div className="w-24 h-2 bg-base-300 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full transition-all duration-700"
+                                    style={{ width: `${totalCount ? (solvedCount / totalCount) * 100 : 0}%` }}
+                                />
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan="4" className="text-center py-32">
-                        <div className="flex flex-col items-center gap-3 opacity-25">
-                          <Search size={48} />
-                          <p className="font-bold uppercase tracking-widest text-xs">No matching problems</p>
                         </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+                    )}
+                </div>
 
-export default HomePage;
+                {/* Filters */}
+                <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between mb-5">
+                    <div className="flex flex-row flex-nowrap gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <select
+                            className="select select-bordered select-sm bg-base-100"
+                            value={topicFilter}
+                            onChange={e => setTopicFilter(e.target.value)}
+                        >
+                            {['All Topics', 'Array', 'String', 'Hash Table', 'Dynamic Programming', 'Math', 'Two Pointers', 'Binary Search'].map(t => (
+                                <option key={t}>{t}</option>
+                            ))}
+                        </select>
+
+                        <select
+                            className="select select-bordered select-sm bg-base-100"
+                            value={difficultyFilter}
+                            onChange={e => setDifficultyFilter(e.target.value)}
+                        >
+                            <option value="All">Difficulty</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+
+                        <select
+                            className="select select-bordered select-sm bg-base-100"
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                        >
+                            <option value="All">All Status</option>
+                            <option value="Solved">Solved</option>
+                            <option value="Unsolved">Unsolved</option>
+                        </select>
+                    </div>
+
+                    <label className="input input-bordered input-sm flex items-center gap-2 bg-base-100 w-56">
+                        <Search className="w-3.5 h-3.5 shrink-0 text-base-content/40" />
+                        <input
+                            type="text"
+                            placeholder="Search problems..."
+                            className="grow bg-transparent outline-none text-sm"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </label>
+                </div>
+
+                {/* Problem table — same component used everywhere */}
+                <ProblemTable
+                    problems={filtered}
+                    solvedIds={solvedIds}
+                    loading={loading}
+                    emptyMessage="No problems match your filters."
+                />
+
+                {!loading && (
+                    <p className="text-xs text-center text-base-content/20 mt-3">
+                        Showing {filtered.length} of {totalCount} problems
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default Homepage;

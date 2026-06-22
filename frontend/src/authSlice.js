@@ -1,16 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axiosClient from './utils/axiosClient'
-
+import axiosClient from './utilis/axiosClient'
+//dekho hume api call maran hai isliye hume createasync thunk ka use krenge aur extrareducer bnayenge
+//userdata me me form se bhar hua data yage aur wo hum usedispatch se krenge in registerpage
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-    const response =  await axiosClient.post('/auth/register', userData);
-    return response.data.user;
+    const response =  await axiosClient.post('/user/register', userData);//hum wo api call krenge 
+    //aur userdata bhej denge backend ko 
+    return response.data.reply;
     } catch (error) {
-  // Access the error message sent by your backend (e.g., res.status(400).json({message: "..."}))
-  return rejectWithValue(error.response?.data || { message: error.message });
-     }
+      return rejectWithValue(error.response?.data?.error || error.message);
+    }
   }
 );
 
@@ -19,26 +20,24 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axiosClient.post('/auth/login', credentials);
-      console.log(response);
-      return response.data.user;
+      const response = await axiosClient.post('/user/login', credentials);
+      return response.data.reply;
     } catch (error) {
-  // Access the error message sent by your backend (e.g., res.status(400).json({message: "..."}))
-  return rejectWithValue(error.response?.data || { message: error.message });
-      }
+      return rejectWithValue(error.response?.data?.error || error.message);
+    }
   }
 );
 
 export const checkAuth = createAsyncThunk(
   'auth/check',
+  //ye - ki hum kuch bhej nhi rha hai 
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.get('/auth/check');
-      return data.user;
+      const { data } = await axiosClient.get('/user/check');
+      return data.reply;
     } catch (error) {
-  // Access the error message sent by your backend (e.g., res.status(400).json({message: "..."}))
-  return rejectWithValue(error.response?.data || { message: error.message });
-     }
+      return rejectWithValue(error.response?.data?.error || error.message);
+    }
   }
 );
 
@@ -46,12 +45,11 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await axiosClient.post('/auth/logout');
+      await axiosClient.post('/user/logout');
       return null;
-    }catch (error) {
-  // Access the error message sent by your backend (e.g., res.status(400).json({message: "..."}))
-  return rejectWithValue(error.response?.data || { message: error.message });
-     }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || error.message);
+    }
   }
 );
 
@@ -60,7 +58,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     isAuthenticated: false,
-    loading: true,
+    loading: false,
     error: null
   },
   reducers: {

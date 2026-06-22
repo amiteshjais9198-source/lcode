@@ -1,64 +1,46 @@
-import { Routes, Route,Navigate} from "react-router";
-import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import CodeWorkspace from "./pages/CodeWorkSpace";
-import {checkAuth} from "./authSlice"
-import { useDispatch,useSelector} from "react-redux";
-import { useEffect } from "react";
-import AdminPanel from "./component/AdminPanel";
-import Admin from "./pages/Admin";
-import AdminDelete from "./component/AdminDelete";
-import AdminUpdateList from "./component/AdminUpdateList";
-import UpdateProblem from "./component/UpdateProblem";
-import AdminVideo from "./component/AdminVideo";
-import VideoUpload from "./component/AdminUpload";
-import { ThemeProvider } from "./context/ThemeContext";
-import Navbar from "./component/Navbar";
+import { Route, Routes } from 'react-router-dom'
+import Loginpage from './pages/Loginpage.jsx'
+import Homepage from './pages/homepage.jsx'
+import Registerpage from './pages/Registerpage.jsx'
+import Profilepage from './pages/Profilepage.jsx'
+import Adminpage from './pages/Adminpage.jsx'
+import { useDispatch, useSelector } from 'react-redux'
+import { checkAuth } from './authslice.js'
+import { useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
+import Navbar from './components/Navbar.jsx'
+import Problempage from './pages/Problempage/index.jsx'
 
-function App(){
-  
-    // code likhna isAuthentciated
-    const {isAuthenticated,user,loading} =  useSelector((state)=>state.auth);
-    const dispatch = useDispatch();
-  
-  // console.log(user);
-  // console.log(user?.role);
-  // console.log(isAuthenticated);
-  // console.log(loading);
-    useEffect(()=>{
-     dispatch(checkAuth());
-    },[dispatch]);
+//dekho ye checkAuth functio from te authslicer pehle agar user website me ghusega to ye backedn 
+// me appi call maar dega agar cookie verify ho jata hai to isauthenticated true hojayega aur 
+//  route me dekho kya hota hai 
+function App() {
+  const {isAuthenticated, user}=useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-if (loading) {
-  console.log("phle konsa chala dekho");
-    return <div className="min-h-screen flex items-center justify-center">
-      <span className="loading loading-spinner loading-lg"></span>
-    </div>;
-  }
+  useEffect(() => {
+    dispatch(checkAuth());
+    
+    // Set initial theme to dark by default globally
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme !== 'light') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  }, [dispatch]);
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen flex flex-col bg-base-100 text-base-content antialiased">
-        <Navbar />
-        <main className="flex-grow flex flex-col">
-          <Routes>
-            <Route path="/" element={isAuthenticated ?<HomePage></HomePage>:<Navigate to="/signup" />}></Route>
-            <Route path="/login" element={isAuthenticated?<Navigate to="/" />:<Login></Login>}></Route>
-            <Route path="/signup" element={isAuthenticated?<Navigate to="/" />:<Signup></Signup>}></Route>
-            <Route path="/admin" element={isAuthenticated && user?.role === 'admin' ? <Admin /> : <Navigate to="/" />} />
-            <Route path="/admin/create" element={isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to="/" />} />
-            <Route path="/admin/delete" element={isAuthenticated && user?.role === 'admin' ? <AdminDelete /> : <Navigate to="/" />} />
-            <Route path="/admin/video" element={isAuthenticated && user?.role === 'admin' ? <AdminVideo /> : <Navigate to="/" />} />
-            <Route path="/admin/upload/:problemId" element={isAuthenticated && user?.role === 'admin' ? <VideoUpload /> : <Navigate to="/" />} />
-            <Route path="/admin/updateList" element={isAuthenticated && user?.role === 'admin' ? <AdminUpdateList /> : <Navigate to="/" />} />
-            <Route path="/admin/update/:id" element={isAuthenticated && user?.role === 'admin' ? <UpdateProblem /> : <Navigate to="/" />} />
-            <Route path="/problem/:problemId" element={<CodeWorkspace></CodeWorkspace>}></Route>
-          </Routes>
-        </main>
-      </div>
-    </ThemeProvider>
+   <>
+   {isAuthenticated && <Navbar />}
+   <Routes>
+    <Route path="/" element={isAuthenticated?<Homepage></Homepage>:<Navigate to="/login"></Navigate>  }></Route>
+    <Route path="/login" element={isAuthenticated?<Navigate to="/"/>:<Loginpage></Loginpage>}></Route>
+    <Route path="/register" element={isAuthenticated?<Navigate to="/"/>:<Registerpage></Registerpage>}></Route>
+    <Route path="/profile" element={isAuthenticated?<Profilepage/>:<Navigate to="/login"/>}></Route>
+    <Route path="/admin" element={isAuthenticated && user?.role === "admin" ? <Adminpage/> : <Navigate to="/"/>}></Route>
+     <Route path="/problem/:problemId" element={<Problempage />} />
+    </Routes>
+   </>
   )
 }
 
-export default App;
+export default App
