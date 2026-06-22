@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../authslice';
+import { logoutUser } from '../authSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, User, Sun, Moon, Shield, ChevronDown } from 'lucide-react';
 
