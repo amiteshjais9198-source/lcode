@@ -62,9 +62,9 @@
         max-height: none !important;
     }
 
-    /* AI Help tab: full screen height on mobile */
+    /* AI Help tab: 70% of screen height on mobile */
     .problem-left-content-ai {
-        height: calc(100vh - 110px) !important;
+        height: 70vh !important;
         overflow: hidden !important;
     }
 
