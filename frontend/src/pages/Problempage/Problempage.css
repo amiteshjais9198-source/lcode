@@ -82,6 +82,12 @@
         min-height: calc(100vh - 64px);
     }
 
+    /* When editor is not active, allow touch scrolling through it */
+    .problem-editor-container .monaco-editor,
+    .problem-editor-container .overflow-guard {
+        touch-action: auto !important;
+    }
+
     /* Bottom panel (testcases/result): auto height on mobile */
     .problem-bottom-panel {
         height: auto !important;

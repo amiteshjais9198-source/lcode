@@ -46,6 +46,16 @@ export default function Problempage() {
     // Language dropdown open
     const [langOpen, setLangOpen] = useState(false);
 
+    // Mobile editor activation (prevents scroll getting stuck in editor)
+    const [editorActive, setEditorActive] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // ── Fetch problem ────────────────────────────────────────────────
     useEffect(() => {
         const fetchProblem = async () => {
@@ -379,6 +389,51 @@ export default function Problempage() {
 
                     {/* Monaco Editor */}
                     <div className="problem-editor-container" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                        {/* Mobile: overlay to allow page scroll, tap to activate editor */}
+                        {isMobile && !editorActive && (
+                            <div
+                                onClick={() => setEditorActive(true)}
+                                style={{
+                                    position: 'absolute', inset: 0, zIndex: 10,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    background: 'rgba(0,0,0,0.15)',
+                                    backdropFilter: 'blur(1px)',
+                                    cursor: 'pointer',
+                                    touchAction: 'auto',
+                                }}
+                            >
+                                <div style={{
+                                    background: 'rgba(0,184,163,0.9)',
+                                    color: '#fff',
+                                    padding: '10px 20px',
+                                    borderRadius: 8,
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                                }}>
+                                    👆 Tap to start coding
+                                </div>
+                            </div>
+                        )}
+                        {isMobile && editorActive && (
+                            <button
+                                onClick={() => setEditorActive(false)}
+                                style={{
+                                    position: 'absolute', top: 6, right: 10, zIndex: 10,
+                                    background: 'rgba(255,55,95,0.85)',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: 6,
+                                    padding: '4px 10px',
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                                }}
+                            >
+                                ✕ Lock & Scroll
+                            </button>
+                        )}
                         <Editor
                             height="100%"
                             language={monacoLang}
@@ -387,7 +442,7 @@ export default function Problempage() {
                             theme={isDark ? 'vs-dark' : 'vs-light'}
                             onMount={(editor) => { editorRef.current = editor; }}
                             options={{
-                                fontSize: 14,
+                                fontSize: isMobile ? 13 : 14,
                                 fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
                                 fontLigatures: true,
                                 minimap: { enabled: false },
@@ -406,6 +461,7 @@ export default function Problempage() {
                                 suggestOnTriggerCharacters: true,
                                 quickSuggestions: true,
                                 bracketPairColorization: { enabled: true },
+                                readOnly: isMobile && !editorActive,
                             }}
                         />
                     </div>
