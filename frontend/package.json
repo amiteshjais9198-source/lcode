@@ -22,7 +22,6 @@
     "react-hook-form": "^7.79.0",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.3.0",
-    "react-resizable-panels": "^4.11.2",
     "react-router-dom": "^7.18.0",
     "router": "^2.2.0",
     "tailwindcss": "^4.3.1",
