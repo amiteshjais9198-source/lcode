@@ -8,6 +8,7 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
         { role: 'ai', content: 'Hi there! I am your AI coding assistant. Stuck on this problem? Ask me anything!' }
     ]);
     const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -28,6 +29,7 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
         // Add user message to UI immediately
         setMessages(newMessages);
         setInput('');
+        setIsLoading(true);
 
         try {
             // Call our new backend route
@@ -46,6 +48,8 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
         } catch (error) {
             console.error(error);
             setMessages(prev => [...prev, { role: 'ai', content: 'Network Error: Could not reach the AI.' }]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -111,6 +115,28 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
                         </div>
                     </div>
                 ))}
+                {isLoading && (
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                        <div style={{ background: '#00b8a3', borderRadius: '50%', padding: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Bot size={14} color="#fff" />
+                        </div>
+                        <div style={{
+                            background: 'rgba(100,110,140,0.08)',
+                            border: '1px solid var(--tc-border, rgba(100,110,140,0.18))',
+                            padding: '16px',
+                            borderRadius: 12,
+                            borderTopLeftRadius: 2,
+                            width: '250px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px'
+                        }}>
+                            <div className="animate-pulse" style={{ height: '10px', background: 'rgba(100,110,140,0.2)', borderRadius: '4px', width: '100%' }}></div>
+                            <div className="animate-pulse" style={{ height: '10px', background: 'rgba(100,110,140,0.2)', borderRadius: '4px', width: '80%' }}></div>
+                            <div className="animate-pulse" style={{ height: '10px', background: 'rgba(100,110,140,0.2)', borderRadius: '4px', width: '60%' }}></div>
+                        </div>
+                    </div>
+                )}
                 <div ref={messagesEndRef} />
             </div>
 
@@ -121,7 +147,8 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask for hints, code explanation, or debugging..."
+                        placeholder={isLoading ? "Generating response..." : "Ask for hints, code explanation, or debugging..."}
+                        disabled={isLoading}
                         style={{
                             flex: 1,
                             background: 'rgba(100,110,140,0.06)',
@@ -135,14 +162,14 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
                     />
                     <button
                         type="submit"
-                        disabled={!input.trim()}
+                        disabled={!input.trim() || isLoading}
                         style={{
-                            background: input.trim() ? '#00b8a3' : 'rgba(100,110,140,0.2)',
+                            background: (input.trim() && !isLoading) ? '#00b8a3' : 'rgba(100,110,140,0.2)',
                             color: '#fff',
                             border: 'none',
                             borderRadius: 8,
                             padding: '0 16px',
-                            cursor: input.trim() ? 'pointer' : 'not-allowed',
+                            cursor: (input.trim() && !isLoading) ? 'pointer' : 'not-allowed',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
