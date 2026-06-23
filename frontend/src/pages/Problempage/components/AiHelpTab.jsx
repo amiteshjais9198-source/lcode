@@ -91,7 +91,7 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
                         }}>
                             <ReactMarkdown
                                 components={{
-                                    code({node, inline, className, children, ...props}) {
+                                    code({ node, inline, className, children, ...props }) {
                                         return !inline ? (
                                             <div style={{ background: '#1e1e1e', padding: '12px', borderRadius: '8px', overflowX: 'auto', margin: '8px 0', color: '#d4d4d4', fontFamily: 'monospace', fontSize: '13px' }}>
                                                 <code className={className} {...props}>
