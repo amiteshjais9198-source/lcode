@@ -1,0 +1,112 @@
+/* ── Problem Page Mobile Responsive Layout ──────────────────────── */
+
+/* Mobile: stack everything vertically */
+@media (max-width: 768px) {
+
+    /* Main wrapper: allow vertical scroll instead of fixed viewport */
+    .problem-page-wrapper {
+        height: auto !important;
+        min-height: calc(100vh - 64px);
+        overflow: auto !important;
+    }
+
+    /* Top action bar: compact on mobile */
+    .problem-top-bar {
+        padding: 0 10px !important;
+        height: 44px !important;
+        gap: 8px !important;
+    }
+
+    .problem-top-bar button {
+        padding: 5px 10px !important;
+        font-size: 12px !important;
+    }
+
+    /* Main split → stack vertically */
+    .problem-main-split {
+        flex-direction: column !important;
+        overflow: auto !important;
+    }
+
+    /* Left panel → full width, auto height */
+    .problem-left-panel {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--tc-border, rgba(100, 110, 140, 0.18));
+        overflow: visible !important;
+    }
+
+    /* Left tab bar: scrollable horizontally */
+    .problem-left-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .problem-left-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .problem-left-tabs button {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+    }
+
+    /* Left tab content: auto height, no overflow hidden */
+    .problem-left-content {
+        overflow: visible !important;
+        flex: none !important;
+        max-height: 60vh;
+        overflow-y: auto !important;
+    }
+
+    /* Right panel → full width, auto height */
+    .problem-right-panel {
+        flex: none !important;
+        width: 100%;
+        overflow: visible !important;
+        min-width: 0 !important;
+    }
+
+    /* Language bar */
+    .problem-lang-bar {
+        padding: 6px 10px !important;
+    }
+
+    /* Editor container: fixed height on mobile */
+    .problem-editor-container {
+        flex: none !important;
+        height: 350px !important;
+        min-height: 300px;
+    }
+
+    /* Bottom panel: auto height on mobile */
+    .problem-bottom-panel {
+        height: auto !important;
+        min-height: 180px;
+        flex-shrink: 0 !important;
+    }
+
+    .problem-bottom-content {
+        max-height: 300px;
+    }
+}
+
+/* Small mobile: even more compact */
+@media (max-width: 480px) {
+    .problem-editor-container {
+        height: 280px !important;
+        min-height: 250px;
+    }
+
+    .problem-left-content {
+        max-height: 50vh;
+    }
+
+    .problem-top-bar {
+        padding: 0 8px !important;
+        height: 40px !important;
+    }
+}

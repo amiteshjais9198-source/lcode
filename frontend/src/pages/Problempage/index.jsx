@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './Problempage.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Editor from '@monaco-editor/react';
@@ -173,7 +174,7 @@ export default function Problempage() {
     ];
 
     return (
-        <div style={{
+        <div className="problem-page-wrapper" style={{
             display: 'flex',
             flexDirection: 'column',
             height: 'calc(100vh - 64px)',
@@ -183,7 +184,7 @@ export default function Problempage() {
         }}>
 
             {/* ── Top action bar ──────────────────────────────────────── */}
-            <div style={{
+            <div className="problem-top-bar" style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -245,10 +246,10 @@ export default function Problempage() {
             </div>
 
             {/* ── Main split layout ────────────────────────────────────── */}
-            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            <div className="problem-main-split" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
                 {/* ════ LEFT PANEL ════ */}
-                <div style={{
+                <div className="problem-left-panel" style={{
                     width: '40%',
                     minWidth: 320,
                     maxWidth: 600,
@@ -258,7 +259,7 @@ export default function Problempage() {
                     overflow: 'hidden',
                 }}>
                     {/* Left tab bar */}
-                    <div style={{
+                    <div className="problem-left-tabs" style={{
                         display: 'flex',
                         borderBottom: '1px solid var(--tc-border, rgba(100,110,140,0.18))',
                         flexShrink: 0,
@@ -290,7 +291,7 @@ export default function Problempage() {
                     </div>
 
                     {/* Left tab content */}
-                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <div className="problem-left-content" style={{ flex: 1, overflow: 'hidden' }}>
                         {leftTab === 'description' && <DescriptionTab problem={problem} />}
                         {leftTab === 'editorial' && <EditorialTab problemId={problemId} />}
                         {leftTab === 'solutions' && <SolutionsTab />}
@@ -305,10 +306,10 @@ export default function Problempage() {
                 </div>
 
                 {/* ════ RIGHT PANEL ════ */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+                <div className="problem-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
 
                     {/* Right top bar: language selector + reset */}
-                    <div style={{
+                    <div className="problem-lang-bar" style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: 10,
@@ -377,7 +378,7 @@ export default function Problempage() {
                     </div>
 
                     {/* Monaco Editor */}
-                    <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                    <div className="problem-editor-container" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                         <Editor
                             height="100%"
                             language={monacoLang}
@@ -410,7 +411,7 @@ export default function Problempage() {
                     </div>
 
                     {/* ── Bottom panel: Testcases | Result ──────────────── */}
-                    <div style={{
+                    <div className="problem-bottom-panel" style={{
                         height: 220,
                         flexShrink: 0,
                         borderTop: '1px solid var(--tc-border, rgba(100,110,140,0.18))',
@@ -459,7 +460,7 @@ export default function Problempage() {
                         </div>
 
                         {/* Bottom content */}
-                        <div style={{ flex: 1, overflowY: 'auto' }}>
+                        <div className="problem-bottom-content" style={{ flex: 1, overflowY: 'auto' }}>
                             {rightBottomTab === 'testcases' && (
                                 <div style={{ padding: '14px 20px' }}>
                                     {problem.visibleTestCases?.length > 0 ? (
