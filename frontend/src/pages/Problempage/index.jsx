@@ -19,7 +19,7 @@ import SubmissionsTab from './components/SubmissionsTab';
 import ResultPanel from './components/ResultPanel';
 import AiHelpTab from './components/AiHelpTab';
 import VideoTab from './components/VideoTab';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { Panel, Group, Separator } from 'react-resizable-panels';
 
 export default function Problempage() {
     const { problemId } = useParams();
@@ -388,7 +388,7 @@ export default function Problempage() {
                         </button>
                     </div>
 
-                    <PanelGroup direction="vertical" style={{ flex: 1 }}>
+                    <Group direction="vertical" style={{ flex: 1 }}>
                         <Panel defaultSize={70} minSize={20} style={{ display: 'flex', flexDirection: 'column' }}>
                             {/* Monaco Editor */}
                             <div className="problem-editor-container" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
@@ -470,7 +470,7 @@ export default function Problempage() {
                     </div>
                         </Panel>
 
-                        <PanelResizeHandle 
+                        <Separator 
                             style={{
                                 height: 8,
                                 background: 'transparent',
@@ -486,7 +486,7 @@ export default function Problempage() {
                             onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                         >
                             <div style={{ width: 40, height: 3, background: 'var(--tc-border, rgba(100,110,140,0.4))', borderRadius: 2 }} />
-                        </PanelResizeHandle>
+                        </Separator>
 
                         <Panel defaultSize={30} minSize={10} style={{ display: 'flex', flexDirection: 'column' }}>
                             {/* ── Bottom panel: Testcases | Result ──────────────── */}
@@ -569,7 +569,7 @@ export default function Problempage() {
                         </div>
                     </div>
                         </Panel>
-                    </PanelGroup>
+                    </Group>
                 </div>
             </div>
 
