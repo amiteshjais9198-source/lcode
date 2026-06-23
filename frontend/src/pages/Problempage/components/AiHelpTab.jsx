@@ -10,9 +10,12 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
@@ -68,7 +71,7 @@ export default function AiHelpTab({ problemTitle, selectedLang, currentCode }) {
             </div>
 
             {/* Chat Area */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div ref={chatContainerRef} style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {messages.map((msg, i) => (
                     <div key={i} style={{
                         display: 'flex',

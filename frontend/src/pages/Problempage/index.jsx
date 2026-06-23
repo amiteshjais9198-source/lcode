@@ -301,7 +301,7 @@ export default function Problempage() {
                     </div>
 
                     {/* Left tab content */}
-                    <div className="problem-left-content" style={{ flex: 1, overflow: 'hidden' }}>
+                    <div className={`problem-left-content${leftTab === 'ai_help' ? ' problem-left-content-ai' : ''}`} style={{ flex: 1, overflow: 'hidden' }}>
                         {leftTab === 'description' && <DescriptionTab problem={problem} />}
                         {leftTab === 'editorial' && <EditorialTab problemId={problemId} />}
                         {leftTab === 'solutions' && <SolutionsTab />}
