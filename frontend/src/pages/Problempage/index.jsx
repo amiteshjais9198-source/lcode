@@ -19,6 +19,7 @@ import SubmissionsTab from './components/SubmissionsTab';
 import ResultPanel from './components/ResultPanel';
 import AiHelpTab from './components/AiHelpTab';
 import VideoTab from './components/VideoTab';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 export default function Problempage() {
     const { problemId } = useParams();
@@ -387,8 +388,10 @@ export default function Problempage() {
                         </button>
                     </div>
 
-                    {/* Monaco Editor */}
-                    <div className="problem-editor-container" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                    <PanelGroup direction="vertical" style={{ flex: 1 }}>
+                        <Panel defaultSize={70} minSize={20} style={{ display: 'flex', flexDirection: 'column' }}>
+                            {/* Monaco Editor */}
+                            <div className="problem-editor-container" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
                         {/* Mobile: overlay to allow page scroll, tap to activate editor */}
                         {isMobile && !editorActive && (
                             <div
@@ -465,16 +468,34 @@ export default function Problempage() {
                             }}
                         />
                     </div>
+                        </Panel>
 
-                    {/* ── Bottom panel: Testcases | Result ──────────────── */}
-                    <div className="problem-bottom-panel" style={{
-                        height: 220,
-                        flexShrink: 0,
-                        borderTop: '1px solid var(--tc-border, rgba(100,110,140,0.18))',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
-                    }}>
+                        <PanelResizeHandle 
+                            style={{
+                                height: 8,
+                                background: 'transparent',
+                                cursor: 'row-resize',
+                                position: 'relative',
+                                zIndex: 10,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = 'var(--tc-border, rgba(100,110,140,0.2))'}
+                            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                            <div style={{ width: 40, height: 3, background: 'var(--tc-border, rgba(100,110,140,0.4))', borderRadius: 2 }} />
+                        </PanelResizeHandle>
+
+                        <Panel defaultSize={30} minSize={10} style={{ display: 'flex', flexDirection: 'column' }}>
+                            {/* ── Bottom panel: Testcases | Result ──────────────── */}
+                            <div className="problem-bottom-panel" style={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: 'hidden',
+                            }}>
                         {/* Bottom tab bar */}
                         <div style={{
                             display: 'flex',
@@ -547,6 +568,8 @@ export default function Problempage() {
                             )}
                         </div>
                     </div>
+                        </Panel>
+                    </PanelGroup>
                 </div>
             </div>
 
