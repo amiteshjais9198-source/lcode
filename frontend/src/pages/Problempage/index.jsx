@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Editor from '@monaco-editor/react';
 import axiosClient from '../../utilis/axiosClient';
 import {
@@ -21,6 +22,7 @@ import VideoTab from './components/VideoTab';
 export default function Problempage() {
     const { problemId } = useParams();
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
 
     // Data
     const [problem, setProblem] = useState(null);
@@ -167,7 +169,7 @@ export default function Problempage() {
         { id: 'solutions', label: 'Solutions', icon: Users },
         { id: 'submissions', label: 'Submissions', icon: History },
         { id: 'ai_help', label: 'AI Help', icon: Sparkles },
-        { id: 'videos', label: 'Videos', icon: Video },
+        ...(user?.role === 'admin' ? [{ id: 'videos', label: 'Videos', icon: Video }] : []),
     ];
 
     return (
