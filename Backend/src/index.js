@@ -18,10 +18,17 @@ const airouter=require("./routes/aiChatting")
 const videoRouter = require("./routes/video");
 const { generalLimiter } = require("./middleware/rateLimiter");
 const cors = require('cors');
+const allowedOrigins = [/^http:\/\/localhost(:\d+)?$/];
+if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL); // allow exactly the frontend url
+}
+
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow any localhost origin (any port) — works whether Vite runs on 5173, 5174, etc.
-        if (!origin || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        // Allow any localhost origin or the specific FRONTEND_URL
+        if (!origin || allowedOrigins.some(pattern => 
+            pattern instanceof RegExp ? pattern.test(origin) : pattern === origin
+        )) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
