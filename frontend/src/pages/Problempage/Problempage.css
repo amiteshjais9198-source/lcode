@@ -28,7 +28,7 @@
         overflow: auto !important;
     }
 
-    /* Left panel → full width, auto height */
+    /* Left panel (Description) → full width, full natural height */
     .problem-left-panel {
         width: 100% !important;
         min-width: 0 !important;
@@ -54,15 +54,15 @@
         font-size: 12px !important;
     }
 
-    /* Left tab content: auto height, no overflow hidden */
+    /* Left tab content: full natural height — show ALL description content */
     .problem-left-content {
         overflow: visible !important;
         flex: none !important;
-        max-height: 60vh;
-        overflow-y: auto !important;
+        height: auto !important;
+        max-height: none !important;
     }
 
-    /* Right panel → full width, auto height */
+    /* Right panel → full width */
     .problem-right-panel {
         flex: none !important;
         width: 100%;
@@ -75,36 +75,27 @@
         padding: 6px 10px !important;
     }
 
-    /* Editor container: fixed height on mobile */
+    /* Editor container: FULL SCREEN HEIGHT on mobile */
     .problem-editor-container {
         flex: none !important;
-        height: 350px !important;
-        min-height: 300px;
+        height: calc(100vh - 64px) !important;
+        min-height: calc(100vh - 64px);
     }
 
-    /* Bottom panel: auto height on mobile */
+    /* Bottom panel (testcases/result): auto height on mobile */
     .problem-bottom-panel {
         height: auto !important;
-        min-height: 180px;
+        min-height: 200px;
         flex-shrink: 0 !important;
     }
 
     .problem-bottom-content {
-        max-height: 300px;
+        max-height: none;
     }
 }
 
-/* Small mobile: even more compact */
+/* Small mobile: slightly adjusted */
 @media (max-width: 480px) {
-    .problem-editor-container {
-        height: 280px !important;
-        min-height: 250px;
-    }
-
-    .problem-left-content {
-        max-height: 50vh;
-    }
-
     .problem-top-bar {
         padding: 0 8px !important;
         height: 40px !important;
